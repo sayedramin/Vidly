@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Vidly.Models;
 
@@ -9,8 +6,7 @@ namespace Vidly.Controllers
 {
     public class MoviesController : Controller
     {
-
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
         public MoviesController()
         {
@@ -22,6 +18,12 @@ namespace Vidly.Controllers
             _context.Dispose();
         }
 
+        public ActionResult New()
+        {
+            var movie = new Movies();
+            return View("New",movie);
+        }
+
         // GET: Movies
         public ActionResult All()
         {
@@ -30,20 +32,20 @@ namespace Vidly.Controllers
             return View(movies);
         }
 
-        // GET: Movies/Details/5
-        public ActionResult Details(int id)
+        // GET: Movies/Save/5
+        public ActionResult Save(int id)
         {
             var movies = _context.Movies.SingleOrDefault(m => m != null && m.Id == id);
             return View(movies);
         }
 
-        // GET: Movies/Create
+        // GET: Movies/Save
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Movies/Create
+        // POST: Movies/Save
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
