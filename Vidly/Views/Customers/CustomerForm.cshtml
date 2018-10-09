@@ -5,16 +5,8 @@
     ViewBag.Title = "New";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+    <h2>@Model.Title</h2>
 
-
-@if (@Model == null)
-{
-    <h2>New Customer</h2>
-}
-else
-{
-    <h2>Edit Customer</h2>
-}
 
 
 @using (Html.BeginForm("Save", "Customers"))
@@ -26,26 +18,42 @@ else
         @Html.ValidationMessageFor(c => c.Customers.Name)
     </div>
     <div class="form-group">
-        @Html.LabelFor(c => c.Customers.BirthDate)
-        @Html.TextBoxFor(c => c.Customers.BirthDate, "{0:d MMM yyyy}", new { @class = "form-control" })
-        @Html.ValidationMessageFor(c => c.Customers.BirthDate)
-    </div>
-
-
-    <div class="form-group">
         @Html.LabelFor(c => c.Customers.MembershipTypeId)
         @Html.DropDownListFor(c => c.Customers.MembershipTypeId, new SelectList(Model.MembershipTypes.ToList(), "Id", "Type"), "Select Membership Type", new { @class = "form-control" })
         @Html.ValidationMessageFor(c => c.Customers.MembershipTypeId)
     </div>
+    <div class="form-group">
+        @Html.LabelFor(c => c.Customers.BirthDate)
+        @Html.TextBoxFor(c => c.Customers.BirthDate, "{0:d MMM yyyy}", new { @id = "BirthDate", @class = "form-control" })
+        @Html.ValidationMessageFor(c => c.Customers.BirthDate)
+    </div>
+
+
+
     <div class="custom-control custom-checkbox form-check-input rounded-circle">
         <label>
             @Html.CheckBoxFor(c => c.Customers.IsSubscribedToNewsLetter) Subscribed to Newsletter?
         </label>
     </div>
 
-    @Html.HiddenFor(c => c.Customers.Id);
+    @Html.HiddenFor(c => c.Customers.Id)
+    @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-primary">Save</button>
 
 
-    @section Scripts {@Scripts.Render("~/bundles/jqueryval") }
-    }
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/jquery-ui.js")
+    @Styles.Render("~/Content/jquery-ui.css")
+}
+
+<script>
+    $(function () {
+        $("#BirthDate").datepicker();
+
+
+    });
+</script>
