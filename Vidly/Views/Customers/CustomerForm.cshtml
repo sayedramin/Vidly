@@ -7,7 +7,7 @@
 }
 
 
-@if (@Model.Customers== null)
+@if (@Model == null)
 {
     <h2>New Customer</h2>
 }
@@ -17,31 +17,35 @@ else
 }
 
 
-
-
 @using (Html.BeginForm("Save", "Customers"))
 {
+    @Html.ValidationSummary();
     <div class="form-group">
-        @Html.LabelFor(m => m.Customers.Name)
-        @Html.TextBoxFor(m => m.Customers.Name, new { @class = "form-control" })
+        @Html.LabelFor(c => c.Customers.Name)
+        @Html.TextBoxFor(c => c.Customers.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(c => c.Customers.Name)
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Customers.BirthDate)
-        @Html.TextBoxFor(m => m.Customers.BirthDate, "{0:d MMM yyyy}", new { @class = "form-control" })
+        @Html.LabelFor(c => c.Customers.BirthDate)
+        @Html.TextBoxFor(c => c.Customers.BirthDate, "{0:d MMM yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(c => c.Customers.BirthDate)
     </div>
 
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Customers.MembershipTypeId)
-        @Html.DropDownListFor(m => m.Customers.MembershipTypeId, new SelectList(Model.MembershipTypes, "Id", "Type"), "Select Membership Type", new { @class = "form-control" })
+        @Html.LabelFor(c => c.Customers.MembershipTypeId)
+        @Html.DropDownListFor(c => c.Customers.MembershipTypeId, new SelectList(Model.MembershipTypes.ToList(), "Id", "Type"), "Select Membership Type", new { @class = "form-control" })
+        @Html.ValidationMessageFor(c => c.Customers.MembershipTypeId)
     </div>
     <div class="custom-control custom-checkbox form-check-input rounded-circle">
         <label>
-            @Html.CheckBoxFor(m => m.Customers.IsSubscribedToNewsLetter) Subscribed to Newsletter?
+            @Html.CheckBoxFor(c => c.Customers.IsSubscribedToNewsLetter) Subscribed to Newsletter?
         </label>
     </div>
 
-    @Html.HiddenFor(m=>m.Customers.Id);
+    @Html.HiddenFor(c => c.Customers.Id);
     <button type="submit" class="btn btn-primary">Save</button>
 
-}
+
+    @section Scripts {@Scripts.Render("~/bundles/jqueryval") }
+    }

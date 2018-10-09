@@ -1,8 +1,8 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 
 namespace Vidly.Models
@@ -24,7 +24,8 @@ namespace Vidly.Models
         public DbSet<Customers> Customers { get; set; }
         public DbSet<Movies> Movies { get; set; }
         public DbSet<MembershipType> MembershipTypes { get; set; }
-        
+        public DbSet<MovieGenre> MovieGenres { get; set; }
+
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

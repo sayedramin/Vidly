@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.Owin.Security.Provider;
 using Vidly.Models;
 using Vidly.ViewModels;
 
@@ -25,19 +20,11 @@ namespace Vidly.Controllers
             _context.Dispose();
         }
         // GET: Customers
-        public ActionResult All()
+        public ActionResult Index()
         {
             var customers = _context.Customers.Include(c => c.MembershipType).ToList();
             return View(customers);
         }
-
-        public ActionResult Details(int id)
-        {
-            var customer = _context.Customers.Include(c => c.MembershipType).SingleOrDefault(c => c != null && c.Id == id);
-
-            return View(customer);
-        }
-
 
         public ActionResult New()
         {
@@ -45,33 +32,12 @@ namespace Vidly.Controllers
 
             var viewModel = new CustomerFormViewModel
             {
+                Customers = new Customers(),
                 // MembershipTypes = _context.MembershipTypes.ToList()
                 MembershipTypes = membershipType
             };
 
             return View("CustomerForm", viewModel);
-        }
-
-        [HttpPost]
-        public ActionResult Save(CustomerFormViewModel ViewModel)
-        {
-            if (ViewModel.Customers.Id == 0)
-                _context.Customers.Add(ViewModel.Customers);
-            else
-            {
-                var customerInDb = _context.Customers.SingleOrDefault(c => c != null && c.Id == ViewModel.Customers.Id);
-                
-                //TryUpdateModel(customerInDb);  All columns are editable which leave security gap
-                //Mapper.Map(ViewModel, customerInDb); Auto mapper is another way of mapping. you have to create object with clomns you want to map in database first.
-                    customerInDb.Name = ViewModel.Customers.Name;
-                    customerInDb.BirthDate = ViewModel.Customers.BirthDate;
-                    customerInDb.MembershipTypeId = ViewModel.Customers.MembershipTypeId;
-                    customerInDb.IsSubscribedToNewsLetter = ViewModel.Customers.IsSubscribedToNewsLetter;
-            }
-
-            _context.SaveChanges();
-
-            return RedirectToAction("All", "Customers");
         }
 
         public ActionResult Edit(int id)
@@ -85,7 +51,38 @@ namespace Vidly.Controllers
                 Customers = customer,
                 MembershipTypes = _context.MembershipTypes.ToList()
             };
-            return View("CustomerForm",viewModel);
+            return View("CustomerForm", viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(CustomerFormViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                viewModel.MembershipTypes = _context.MembershipTypes.ToList();
+                return View("CustomerForm", viewModel);
+            }
+
+            if (viewModel.Customers.Id == 0)
+                _context.Customers.Add(viewModel.Customers);
+            else
+            {
+                var customerInDb = _context.Customers.SingleOrDefault(c => c != null && c.Id == viewModel.Customers.Id);
+
+                //TryUpdateModel(customerInDb);  All columns are editable which leave security gap
+                //Mapper.Map(ViewModel, customerInDb); Auto mapper is another way of mapping. you have to create object with clomns you want to map in database first.
+                customerInDb.Name = viewModel.Customers.Name;
+                customerInDb.BirthDate = viewModel.Customers.BirthDate;
+                customerInDb.MembershipTypeId = viewModel.Customers.MembershipTypeId;
+                customerInDb.IsSubscribedToNewsLetter = viewModel.Customers.IsSubscribedToNewsLetter;
+
+                _context.Entry(customerInDb).State = EntityState.Modified;
+
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Customers");
         }
     }
 }

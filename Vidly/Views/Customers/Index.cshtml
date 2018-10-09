@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Vidly.Models.Customers>
+@model IEnumerable<Vidly.Models.Customers>
 
 @{
     ViewBag.Title = "View";
@@ -6,12 +6,8 @@
 }
 
 <h2>Customers</h2>
-
-@if (!Model.Any())
-{
-    <p>No customer exists in Database</p>
-}
-else
+@Html.ActionLink("NEW CUSTOMER", "New", "Customers", new { @class = "btn btn-outline-primary" })
+@if (Model != null)
 {
     <table class="table table-hover table-bordered">
         <tr>
@@ -24,7 +20,7 @@ else
         {
             <tr>
                 <td>
-                    @Html.ActionLink(@item.Name, "Edit","Customers", new {id = item.Id}, null)
+                    @Html.ActionLink(@item.Name, "Edit", "Customers", new { id = item.Id }, null)
                 </td>
                 <td>@item.MembershipType.Type</td>
                 <td>@item.MembershipType.DiscountRate %</td>
@@ -32,4 +28,8 @@ else
         }
 
     </table>
+}
+else
+{
+    <p>No customer exists in Database</p>
 }

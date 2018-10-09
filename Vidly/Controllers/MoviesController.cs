@@ -1,12 +1,14 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
 using System.Web.Mvc;
 using Vidly.Models;
+using Vidly.ViewModels;
 
 namespace Vidly.Controllers
 {
     public class MoviesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private ApplicationDbContext _context;
 
         public MoviesController()
         {
@@ -18,91 +20,76 @@ namespace Vidly.Controllers
             _context.Dispose();
         }
 
-        public ActionResult New()
-        {
-            var movie = new Movies();
-            return View("New",movie);
-        }
-
         // GET: Movies
-        public ActionResult All()
+        public ActionResult Index()
         {
-            var movies = _context.Movies.ToList();
+            var moives = _context.Movies.Include(m=>m.Genre).ToList();
 
-            return View(movies);
+            return View("Index",moives);
         }
 
         // GET: Movies/Save/5
-        public ActionResult Save(int id)
-        {
-            var movies = _context.Movies.SingleOrDefault(m => m != null && m.Id == id);
-            return View(movies);
-        }
-
-        // GET: Movies/Save
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Movies/Save
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Movies/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var movieViwModel = new MovieFormViewModel
+            {
+                Movie = _context.Movies.Include(m=>m.Genre).SingleOrDefault(m => m != null && m.Id == id),
+                Genres = _context.MovieGenres.ToList()
+            };
+
+            if (movieViwModel.Movie == null)
+                return HttpNotFound();
+
+            return View("MovieForm", movieViwModel);
+
         }
 
-        // POST: Movies/Edit/5
+
+        public ActionResult New()
+        {
+            var movieFormViewModel = new MovieFormViewModel
+            {
+                Movie = new Movies(),
+                Genres = _context.MovieGenres.ToList()
+            };
+            return View("MovieForm", movieFormViewModel);
+        }
+
+
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Save(Movies movie)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                var viewModel = new MovieFormViewModel
+                {
+                    Movie = movie,
+                    Genres = _context.MovieGenres.ToList()
+                };
+                return View("MovieForm", viewModel);
             }
-            catch
+
+            if (movie.Id == 0)
             {
-                return View();
+                _context.Movies.Add(movie);
             }
-        }
-
-        // GET: Movies/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Movies/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
+            else
             {
-                // TODO: Add delete logic here
+                var movieInDb = _context.Movies.SingleOrDefault(m => m != null && m.Id == movie.Id);
 
-                return RedirectToAction("Index");
+                movieInDb.Id = movie.Id;
+                movieInDb.Name = movie.Name;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.NumberInStock = movie.NumberInStock;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+
+                movieInDb.AddedDate = movie.AddedDate;
+
+                _context.Entry(movieInDb).State = EntityState.Modified;
             }
-            catch
-            {
-                return View();
-            }
+
+            _context.SaveChanges();
+            return RedirectToAction("Index", "Movies");
         }
     }
 }
