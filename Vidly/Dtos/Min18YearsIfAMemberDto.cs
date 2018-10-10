@@ -1,14 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using ValidationContext = System.ComponentModel.DataAnnotations.ValidationContext;
+using Vidly.Models;
 
-namespace Vidly.Models
+namespace Vidly.Dtos
 {
-    public class Min18YearsIfAMember : ValidationAttribute
+    public class Min18YearsIfAMemberDto : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var customerDto = (Customers)validationContext.ObjectInstance;
+            var customerDto = (CustomerDto)validationContext.ObjectInstance;
             if (customerDto.MembershipTypeId == MembershipType.Unknown || customerDto.MembershipTypeId == MembershipType.PayAsYouGo)
                 return ValidationResult.Success;
 
