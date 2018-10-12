@@ -1,0 +1,48 @@
+@model IEnumerable<Vidly.Models.Customers>
+    @{
+        ViewBag.Title = "View";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    <h2>Customers</h2>
+    @Html.ActionLink("NEW CUSTOMER", "New", "Customers", new { @class = "btn btn-outline-primary" })
+    @if (Model != null)
+    {
+        <table id="#customers" class="table table-hover table-bordered">
+            <tr>
+                <th>Customers</th>
+                <th>Membership Type</th>
+                <th>Discount Rate</th>
+                <th>Delete</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(@item.Name, "Edit", "Customers", new { id = item.Id }, null)
+                    </td>
+                    <td>@item.MembershipType.Type</td>
+                    <td>@item.MembershipType.DiscountRate %</td>
+                    <td>
+                        <button class="btn-link js-delete">Delete</button>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>No customer exists in Database</p>
+    }
+
+
+    @section scripts
+    {
+        <script>
+            $(document).ready(function () {
+                $("#customers .js-delete").click(function () {
+                    confirm("jquery");
+                });
+            });
+            alert("Hello");
+        </script>
+    }
