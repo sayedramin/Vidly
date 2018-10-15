@@ -6,16 +6,21 @@
 
 <h2>Movies</h2>
 @Html.ActionLink("NEW MOVIE", "New", "Movie", new { @class = "btn btn-outline-primary" })
+<hr />
 
-@if (Model != null)
-{
-    <table class="table table-hover table-bordered">
+
+<table id="movies" class="table table-hover table-bordered">
+    <thead>
         <tr>
             <th>Movies</th>
             <th>Genre</th>
+            <th>ReleaseDate</th>
+            <th>Delete</th>
         </tr>
+    </thead>
+    <tbody></tbody>
 
-        @foreach (var item in Model)
+    @*@foreach (var item in Model)
         {
             <tr>
                 <td>
@@ -26,11 +31,103 @@
                 </td>
 
             </tr>
-        }
+        }*@
 
-    </table>
+</table>
+
+
+@section scripts{
+    
+
+    <script>
+        $(document).ready(function () {
+
+            //GET MOVIE API CALL && FEED DATATABLE()
+            var tabledata = $("#movies").DataTable({
+                ajax: {
+                    url: "/api/movies",
+
+                    // if you want to select data from a child object only then set data source to child object.
+                    dataSrc: "" 
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function (data, type, movie) {
+                            return "<a href='/movies/edit/" + movie.id + "'>" + movie.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "genre.genre"
+                    },
+                    {
+                        data: "releaseDate"
+                    },
+                    {
+                        data: "id",
+                        render: function (movie) {
+                            return "<button class='btn btn-lg btn-danger js-delete' data-customer-id=" + movie + ">Delete</button>";
+                        }
+                    }
+                ]
+            });
+
+            // DELETE Movie API CALL
+            $("#movies").on("click", ".js-delete", function () {
+                var button = $(this);
+                bootbox.confirm("Are you sure you want to delete this movie?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/movies/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function () {
+                                tabledata.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+
+
+            // AUTOCOMPLETE IS NOT WORKING RIGHT NOW - WILL DIG IN LATER 
+            $("input[type='search']").autocomplete({
+                source: tabledata.column(0).data().toArray()
+            });
+
+             /* var availableTags = tabledata.columns(0).data().toArray().toString().split(',');
+
+            var xx = [
+                "JQUERY",
+                "Don",
+                "Asp",
+                "BASIC",
+                "Hitman",
+                "C++",
+                "Clojure",
+                "Kingsman",
+                "ColdFusion",
+                "Erlang",
+                "Fortran",
+                "MI6",
+                "Haskell",
+                "Java",
+                "JavaScript",
+                "UnderWorld",
+                "Perl",
+                "PHP",
+                "Python",
+                "Zero",
+                "Scala",
+                "Scheme"
+            ]; */
+
+        });
+
+       
+
+       
+
+    </script>
+
 }
-else
-{
-    <p>No movie exists in Database</p>
-}
+

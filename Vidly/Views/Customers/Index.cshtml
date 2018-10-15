@@ -7,29 +7,68 @@
 
 <h2>Customers</h2>
 @Html.ActionLink("NEW CUSTOMER", "New", "Customers", new { @class = "btn btn-outline-primary" })
-@if (Model != null)
-{
-    <table class="table table-hover table-bordered">
+<hr />
+<table id="customers" class="table table-hover table-bordered">
+    <thead>
         <tr>
             <th>Customers</th>
             <th>Membership Type</th>
-            <th>Discount Rate</th>
+            <th>Delete</th>
         </tr>
+    </thead>
+    <tbody> </tbody>
+</table>
 
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.ActionLink(@item.Name, "Edit", "Customers", new { id = item.Id }, null)
-                </td>
-                <td>@item.MembershipType.Type</td>
-                <td>@item.MembershipType.DiscountRate %</td>
-            </tr>
-        }
+@section Scripts
+{    
+    <script>
+        $(document).ready(function () {
+            //GET API DATEA WITH AJAX
+            var tabledata = $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function (data, type, customer) {
+                            return "<a href='/customers/edit/" + customer.id + "'>" + customer.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "membershipType.type"
+                    },
+                    {
+                        data: "id",
+                        render: function (data) {
+                            return "<button class='btn btn-lg btn-danger js-delete' data-customer-id=" + data + ">Delete</button>";
+                        }
+                    }
+                ]
+            });
 
-    </table>
-}
-else
-{
-    <p>No customer exists in Database</p>
+            //DELETE API DATE WITH AJAX
+            $("#customers").on("click", ".js-delete", function () {
+                var button = $(this);
+                bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/customers/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function () {
+                                tabledata.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+
+            //AUTO COMPLETE IS GIVING ME HARD TIME - FUCKING USLESS JQUERY PLUGIN...
+            $("input[type='search']").autocomplete(tabledata.columns(0).data().toString().slice(',').join(','));
+
+
+
+        });
+    </script>
 }
