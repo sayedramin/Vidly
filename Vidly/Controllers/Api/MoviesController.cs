@@ -10,6 +10,8 @@ using Vidly.Models;
 
 namespace Vidly.Controllers.Api
 {
+    [Authorize(Roles = RoleName.CanManageMovies)] // Only Authorized users can access API no guest account - Applied to all actions therefor its on the top.
+
     [Produces("application/json")]
     [System.Web.Http.Route("api/Movies")]
     public class MoviesController : ApiController
@@ -22,6 +24,7 @@ namespace Vidly.Controllers.Api
         }
 
             // GET /api/movies
+            [AllowAnonymous]  //Only to other users in the system to view the data through ajax call but can not edit or delete.
             [System.Web.Http.HttpGet]
             [System.Web.Http.Route("api/Movies")]
             public IHttpActionResult GetMovies()

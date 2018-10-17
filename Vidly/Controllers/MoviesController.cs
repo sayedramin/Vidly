@@ -23,12 +23,16 @@ namespace Vidly.Controllers
         // GET: Movies
         public ActionResult Index()
         {
-            var moives = _context.Movies.Include(m=>m.Genre).ToList();
+            return View(User.IsInRole(RoleName.CanManageMovies) ? "List" : "ReadOnlyList");
 
-            return View("Index",moives);
+            // WE USED BELOW CODE FOR TAKING DATA THROUGH SERVER SIDE // NOW WE USE CLIENT SIDE BY CALLING AJAX. FOR DETAIL SEE THE LIST.CSHTML VIEW
+            //var moives = _context.Movies.Include(m=>m.Genre).ToList();
+
+            //return View("List",moives);
         }
 
         // GET: Movies/Save/5
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Edit(int id)
         {
             var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(m => m != null && m.Id == id);
@@ -45,6 +49,7 @@ namespace Vidly.Controllers
         }
 
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult New()
         {
             var movieFormViewModel = new MovieFormViewModel
@@ -58,6 +63,7 @@ namespace Vidly.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        //[Authorize(Roles = RoleName.CanManageMovies]   -- Because it does not connect to a view 
         public ActionResult Save(Movies movie)
         {
             if (!ModelState.IsValid)

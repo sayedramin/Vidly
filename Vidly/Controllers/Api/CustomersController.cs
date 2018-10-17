@@ -14,6 +14,10 @@ using HttpGetAttribute = Microsoft.AspNetCore.Mvc.HttpGetAttribute;
 
 namespace Vidly.Controllers.Api
 {
+
+    [Authorize(Roles = RoleName.CanManageCustomers)] // Only Authorized users can use API no GUEST ACCOUNT
+
+
     [Produces("application/json")]
     [System.Web.Http.Route("api/Customers")]
     public class CustomersController : ApiController
@@ -26,6 +30,7 @@ namespace Vidly.Controllers.Api
         }
 
         // GET /api/customers
+        [AllowAnonymous]
         [System.Web.Http.HttpGet]
         [System.Web.Http.Route("api/Customers")]
         public IHttpActionResult GetCustomers()

@@ -1,0 +1,47 @@
+@model IEnumerable<Vidly.Models.Customers>
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Customers</h2>
+<hr />
+<table id="customers" class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>Customers</th>
+            <th>Membership Type</th>
+        </tr>
+    </thead>
+    <tbody> </tbody>
+</table>
+
+@section Scripts
+{    
+    <script>
+        $(document).ready(function () {
+            //GET API DATEA WITH AJAX
+            var tabledata = $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "membershipType.type"
+                    }
+                ]
+            });
+
+            //AUTO COMPLETE IS GIVING ME HARD TIME - FUCKING USLESS JQUERY PLUGIN...
+            $("input[type='search']").autocomplete(tabledata.columns(0).data().toString().slice(',').join(','));
+
+
+
+        });
+    </script>
+}

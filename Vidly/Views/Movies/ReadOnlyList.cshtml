@@ -1,0 +1,94 @@
+﻿@model IEnumerable<Vidly.Models.Movies>
+@{
+    ViewBag.Title = "Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Movies</h2>
+<hr />
+
+
+<table id="movies" class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>Movies</th>
+            <th>Genre</th>
+            <th>ReleaseDate</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+
+</table>
+
+
+@section scripts{
+
+
+    <script>
+        $(document).ready(function () {
+
+            //GET MOVIE API CALL && FEED DATATABLE()
+            var tabledata = $("#movies").DataTable({
+                ajax: {
+                    url: "/api/movies",
+
+                    // if you want to select data from a child object only then set data source to child object.
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                    },
+                {
+                    data: "genre.genre"
+                },
+                {
+                    data: "releaseDate"
+                }
+                ]
+            });
+
+
+
+            // AUTOCOMPLETE IS NOT WORKING RIGHT NOW - WILL DIG IN LATER
+            $("input[type='search']").autocomplete({
+                source: tabledata.column(0).data().toArray()
+            });
+
+             /* var availableTags = tabledata.columns(0).data().toArray().toString().split(',');
+
+            var xx = [
+                "JQUERY",
+                "Don",
+                "Asp",
+                "BASIC",
+                "Hitman",
+                "C++",
+                "Clojure",
+                "Kingsman",
+                "ColdFusion",
+                "Erlang",
+                "Fortran",
+                "MI6",
+                "Haskell",
+                "Java",
+                "JavaScript",
+                "UnderWorld",
+                "Perl",
+                "PHP",
+                "Python",
+                "Zero",
+                "Scala",
+                "Scheme"
+            ]; */
+
+        });
+
+
+
+
+
+    </script>
+
+}
+
