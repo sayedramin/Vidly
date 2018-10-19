@@ -7,6 +7,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Glimpse.Mvc.AlternateType;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Vidly.Dtos;
 using Vidly.Models;
@@ -27,6 +29,13 @@ namespace Vidly.Controllers.Api
         public CustomersController()
         {
             _context = new ApplicationDbContext();
+        }
+
+
+        public ActionResult testelmah()
+        {
+
+            return testelmah();
         }
 
         // GET /api/customers

@@ -1,6 +1,10 @@
-﻿using System.Data.Entity;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Web.Mvc;
+using System.Web.UI;
 using Vidly.Models;
 using Vidly.ViewModels;
 
@@ -19,9 +23,20 @@ namespace Vidly.Controllers
         {
             _context.Dispose();
         }
+        [OutputCache(Duration = 0,Location = OutputCacheLocation.Client, VaryByParam = "*", NoStore = true)] // it cache html not the date but duration duration zero means don't cache 
         // GET: Customers
         public ActionResult Index()
         {
+            // Remember caching is using lots of your memory and may result memory performance while solving network call performance.
+            // Don't use blindly any concept unless you really have to use it. first check Glimpse and find the performance issue than use optimization
+//            if (MemoryCache.Default["Genres"] == null)
+//            {
+//                MemoryCache.Default["Genres"] = _context.MovieGenres.ToList();
+//            }
+//
+//            var genres = MemoryCache.Default["Genres"] as IEnumerable<MovieGenre>;
+
+
             //var customers = _context.Customers.Include(c => c.MembershipType).ToList();
             //return View(customers);
             return View(User.IsInRole(RoleName.CanManageCustomers) ? "List" : "ReadOnlyList");
